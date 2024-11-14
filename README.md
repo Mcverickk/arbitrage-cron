@@ -21,7 +21,7 @@ This project is designed to fetch cryptocurrency prices from various Decentraliz
 
 To run the cron job, use the following command:
 ```sh
-node index.js
+npm run start
 ```
 
 ### Contributing
