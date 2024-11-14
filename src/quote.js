@@ -21,9 +21,11 @@ const fetchQuoteFromUniswap = async ({tokenIn, tokenOut, poolFees, chain, amount
         tokenInAddress,
         tokenOutAddress,
         poolFees,
-        amountIn,
+        BigInt(amountIn),
         0
     )
+
+    console.log(quotedAmountOut.toString(), tokenOut);
 
     return quotedAmountOut.toString();
 }
