@@ -24,7 +24,7 @@ const findToken = (tokenSymbol, tokenArray) => {
 const ARBITRUM_MAINNET = {
     chainId: 42161,
     rpcUrl: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    uniswapQuoterAddress: '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6',
+    uniswapQuoterAddress: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e',
     fetchToken(tokenSymbol) {
         return findToken(tokenSymbol, ARBITRUM_MAINNET_TOKENS);
     }
@@ -42,7 +42,7 @@ const BASE_MAINNET = {
 const POLYGON_MAINNET = {
     chainId: 137,
     rpcUrl: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    uniswapQuoterAddress: '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6',
+    uniswapQuoterAddress: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e',
     fetchToken(tokenSymbol) {
         return findToken(tokenSymbol, POLYGON_MAINNET_TOKENS);
     }

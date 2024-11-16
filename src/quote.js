@@ -1,4 +1,4 @@
-const Quoter = require('@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json');
+const QuoterV2 = require('@uniswap/v3-periphery/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json');
 const { ethers } = require('ethers');
 const { getChainData } = require('./chainConfigs.js');
 
@@ -6,26 +6,27 @@ const fetchQuoteFromUniswap = async ({tokenIn, tokenOut, poolFees, chain, amount
 
     const chainConfig = getChainData(chain);
 
-    const { address: tokenInAddress } = chainConfig.fetchToken(tokenIn);
-    const { address: tokenOutAddress } = chainConfig.fetchToken(tokenOut);
+    const { address: tokenInAddress, decimals: tokenInDecimal } = chainConfig.fetchToken(tokenIn);
+    const { address: tokenOutAddress, decimals: tokenOutDecimal  } = chainConfig.fetchToken(tokenOut);
 
     const provider = new ethers.JsonRpcProvider(chainConfig.rpcUrl);
 
     const quoterContract = new ethers.Contract(
         chainConfig.uniswapQuoterAddress,
-        Quoter.abi,
+        QuoterV2.abi,
         provider
     );
     
-    const quotedAmountOut = await quoterContract.quoteExactInputSingle.staticCallResult(
+    const [quotedAmountOut,,,] = await quoterContract.quoteExactInputSingle.staticCallResult([
         tokenInAddress,
         tokenOutAddress,
-        poolFees,
         BigInt(amountIn),
+        poolFees,
         0
-    )
+    ])
 
-    console.log(quotedAmountOut.toString(), tokenOut);
+    const quotedAmountOutInEth = quotedAmountOut.toString()/10**tokenOutDecimal;
+    console.log(`UNISWAP(${chain}) || ${amountIn/10**tokenInDecimal} ${tokenIn} ==> ${quotedAmountOutInEth.toString()} ${tokenOut}`);
 
     return quotedAmountOut.toString();
 }
