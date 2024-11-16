@@ -1,30 +1,11 @@
 require('dotenv').config();
 
-const getChainData = (chain) => {
-    switch(chain) {
-        case 'base':
-            return BASE_MAINNET;
-        case 'polygon':
-            return POLYGON_MAINNET;
-        case 'arbitrum':
-            return ARBITRUM_MAINNET;
-        default:
-            return POLYGON_MAINNET;
-    }
-}
-
-const findToken = (tokenSymbol, tokenArray) => {
-    const token = tokenArray.find(token => token.symbol === tokenSymbol);
-    if(!token) {
-      console.error(`Token with symbol ${tokenSymbol} not found`);
-    }
-    return token;
-}
-
 const ARBITRUM_MAINNET = {
     chainId: 42161,
     rpcUrl: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    uniswapQuoterAddress: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e',
+    getQuoterAddress(exchange) {
+        return fetchQuoterAddress('arbitrum', exchange)?.address;
+    },
     fetchToken(tokenSymbol) {
         return findToken(tokenSymbol, ARBITRUM_MAINNET_TOKENS);
     }
@@ -33,7 +14,9 @@ const ARBITRUM_MAINNET = {
 const BASE_MAINNET = {
     chainId: 8453,
     rpcUrl: `https://base-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    uniswapQuoterAddress: '0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a',
+    getQuoterAddress(exchange) {
+        return fetchQuoterAddress('base', exchange)?.address;
+    },
     fetchToken(tokenSymbol) {
         return findToken(tokenSymbol, BASE_MAINNET_TOKENS);
     }
@@ -42,7 +25,9 @@ const BASE_MAINNET = {
 const POLYGON_MAINNET = {
     chainId: 137,
     rpcUrl: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    uniswapQuoterAddress: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e',
+    getQuoterAddress(exchange) {
+        return fetchQuoterAddress('polygon', exchange)?.address;
+    },
     fetchToken(tokenSymbol) {
         return findToken(tokenSymbol, POLYGON_MAINNET_TOKENS);
     }
@@ -68,5 +53,46 @@ const ARBITRUM_MAINNET_TOKENS = [
     { name: 'Chainlink Token', symbol: 'LINK', address: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4', decimals: 18 },
     { name: 'Pendle', symbol: 'PENDLE', address: '0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8', decimals: 18 },
 ]
+
+const fetchQuoterAddress = (chain, exchange) => {
+    switch (chain) {
+        case 'base':
+            return [
+                { exchange: 'uniswap', address: '0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a' },
+                { exchange: 'aerodrome', address: '0x254cF9E1E6e233aa1AC962CB9B05b2cfeAaE15b0' }
+            ].find(quoter => quoter.exchange === exchange);
+        case 'polygon':
+            return [
+                { exchange: 'uniswap', address: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e' }
+            ].find(quoter => quoter.exchange === exchange);
+        case 'arbitrum':
+            return [
+                { exchange: 'uniswap', address: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e' }
+            ].find(quoter => quoter.exchange === exchange);
+        default:
+            return null;
+    }
+}
+
+const findToken = (tokenSymbol, tokenArray) => {
+    const token = tokenArray.find(token => token.symbol === tokenSymbol);
+    if(!token) {
+      console.error(`Token with symbol ${tokenSymbol} not found`);
+    }
+    return token;
+}
+
+const getChainData = (chain) => {
+    switch(chain) {
+        case 'base':
+            return BASE_MAINNET;
+        case 'polygon':
+            return POLYGON_MAINNET;
+        case 'arbitrum':
+            return ARBITRUM_MAINNET;
+        default:
+            return POLYGON_MAINNET;
+    }
+}
 
 module.exports = { getChainData };
